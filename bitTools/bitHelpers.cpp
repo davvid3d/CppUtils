@@ -22,7 +22,7 @@ namespace genericTools
         idx = bit / 8;
         if (idx >= n)
         {
-            printf("DW1000 setBit error out of bound \n");
+            printf("setBit error out of bound \n");
             return;
         }
         uint8_t *targetuint8_t = &data[idx];
@@ -41,7 +41,7 @@ namespace genericTools
         idx = bit / 8;
         if (idx >= n)
         {
-            printf("DW1000 setBit error out of bound  \n");
+            printf("setBit error out of bound  \n");
             return false;
         }
         uint8_t targetuint8_t = data[idx];
