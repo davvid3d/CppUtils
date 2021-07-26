@@ -1,10 +1,14 @@
 #pragma once
 #include <iostream>
 #include <map>
+#include <list>
+#include "tools.h"
 
 #define CONFIGURATION_DEFAULT_FILE_PATH "./config.txt"
 #define CONFIGURATION_DEFAULT_DELIMITER "="
 #define CONFIGURATION_DEFAULT_COMMENT "#"
+#define CONFIGURATION_DEFAULT_LIST_DELIMITER ','
+
 
 namespace genericTools
 {
@@ -13,7 +17,7 @@ namespace genericTools
 		class Param
 		{
 		public:
-			enum Status
+			enum class Status
 			{
 				MAP,
 				VALUE
@@ -32,6 +36,7 @@ namespace genericTools
 			operator double() const;
 			operator float() const;
 			operator std::string() const;
+			operator std::vector<std::string>(void) const;
 
 			Param &operator=(bool);
 			Param &operator=(char);
@@ -64,8 +69,6 @@ namespace genericTools
 
 	protected:
 		void loadDefaultConfig();
-		std::string trim(const std::string &str, const std::string &whitespace = " \t");
-		std::string reduce(const std::string &str, const std::string &fill = " ", const std::string &whitespace = " \t");
 
 	private:
 		std::map<std::string, Param> _params;

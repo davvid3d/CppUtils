@@ -1,6 +1,7 @@
 #include "configuration.h"
 #include <fstream>
 #include <string>
+#include <vector>
 #include <algorithm>
 
 using namespace std;
@@ -30,16 +31,16 @@ configuration::Param &configuration::operator[](const char key[])
 }
 
 configuration::Param::Param(const std::string &value)
-	: _status(configuration::Param::VALUE), _value(value)
+	: _status(configuration::Param::Status::VALUE), _value(value)
 {
 }
 
 configuration::Param::Param(const std::map<std::string, Param> &map)
-	: _status(configuration::Param::MAP), _map(map)
+	: _status(configuration::Param::Status::MAP), _map(map)
 {
 }
 
-configuration::Param::Param()
+configuration::Param::Param() : _status(configuration::Param::Status::MAP)
 {
 }
 
@@ -50,7 +51,7 @@ configuration::Param &configuration::Param::operator[](const std::string &key)
 		_map.insert(std::map<std::string, Param>::value_type(key, Param("")));
 	}
 
-	_status = configuration::Param::MAP;
+	_status = configuration::Param::Status::MAP;
 
 	return (_map.find(key)->second);
 }
@@ -62,7 +63,7 @@ configuration::Param &configuration::Param::operator[](const char key[])
 
 configuration::Param &configuration::Param::operator=(bool value)
 {
-	_status = configuration::Param::VALUE;
+	_status = configuration::Param::Status::VALUE;
 
 	_value = value ? "true" : "false";
 
@@ -71,7 +72,7 @@ configuration::Param &configuration::Param::operator=(bool value)
 
 configuration::Param &configuration::Param::operator=(char value)
 {
-	_status = configuration::Param::VALUE;
+	_status = configuration::Param::Status::VALUE;
 
 	_value = std::to_string(value);
 
@@ -80,7 +81,7 @@ configuration::Param &configuration::Param::operator=(char value)
 
 configuration::Param &configuration::Param::operator=(short value)
 {
-	_status = configuration::Param::VALUE;
+	_status = configuration::Param::Status::VALUE;
 
 	_value = std::to_string(value);
 
@@ -89,7 +90,7 @@ configuration::Param &configuration::Param::operator=(short value)
 
 configuration::Param &configuration::Param::operator=(int value)
 {
-	_status = configuration::Param::VALUE;
+	_status = configuration::Param::Status::VALUE;
 
 	_value = std::to_string(value);
 
@@ -98,7 +99,7 @@ configuration::Param &configuration::Param::operator=(int value)
 
 configuration::Param &configuration::Param::operator=(long value)
 {
-	_status = configuration::Param::VALUE;
+	_status = configuration::Param::Status::VALUE;
 
 	_value = std::to_string(value);
 
@@ -107,7 +108,7 @@ configuration::Param &configuration::Param::operator=(long value)
 
 configuration::Param &configuration::Param::operator=(double value)
 {
-	_status = configuration::Param::VALUE;
+	_status = configuration::Param::Status::VALUE;
 
 	_value = std::to_string(value);
 
@@ -116,7 +117,7 @@ configuration::Param &configuration::Param::operator=(double value)
 
 configuration::Param &configuration::Param::operator=(float value)
 {
-	_status = configuration::Param::VALUE;
+	_status = configuration::Param::Status::VALUE;
 
 	_value = std::to_string(value);
 
@@ -125,7 +126,7 @@ configuration::Param &configuration::Param::operator=(float value)
 
 configuration::Param &configuration::Param::operator=(std::string const &value)
 {
-	_status = configuration::Param::VALUE;
+	_status = configuration::Param::Status::VALUE;
 
 	_value = value;
 
@@ -134,7 +135,7 @@ configuration::Param &configuration::Param::operator=(std::string const &value)
 
 configuration::Param &configuration::Param::operator=(const char value[])
 {
-	_status = configuration::Param::VALUE;
+	_status = configuration::Param::Status::VALUE;
 
 	_value = value;
 
@@ -143,7 +144,7 @@ configuration::Param &configuration::Param::operator=(const char value[])
 
 configuration::Param::operator bool(void) const
 {
-	if (_status == configuration::Param::MAP)
+	if (_status == configuration::Param::Status::MAP)
 		throw std::runtime_error("Current index is not a valid value");
 
 	return (_value == "true");
@@ -151,7 +152,7 @@ configuration::Param::operator bool(void) const
 
 configuration::Param::operator char(void) const
 {
-	if (_status == configuration::Param::MAP)
+	if (_status == configuration::Param::Status::MAP)
 		throw std::runtime_error("Current index is not a valid value");
 
 	return (std::stoi(_value));
@@ -159,7 +160,7 @@ configuration::Param::operator char(void) const
 
 configuration::Param::operator short(void) const
 {
-	if (_status == configuration::Param::MAP)
+	if (_status == configuration::Param::Status::MAP)
 		throw std::runtime_error("Current index is not a valid value");
 
 	return (std::stoi(_value));
@@ -167,7 +168,7 @@ configuration::Param::operator short(void) const
 
 configuration::Param::operator int(void) const
 {
-	if (_status == configuration::Param::MAP)
+	if (_status == configuration::Param::Status::MAP)
 		throw std::runtime_error("Current index is not a valid value");
 
 	return (std::stoi(_value));
@@ -175,7 +176,7 @@ configuration::Param::operator int(void) const
 
 configuration::Param::operator long(void) const
 {
-	if (_status == configuration::Param::MAP)
+	if (_status == configuration::Param::Status::MAP)
 		throw std::runtime_error("Current index is not a valid value");
 
 	return (std::stol(_value));
@@ -183,7 +184,7 @@ configuration::Param::operator long(void) const
 
 configuration::Param::operator double(void) const
 {
-	if (_status == configuration::Param::MAP)
+	if (_status == configuration::Param::Status::MAP)
 		throw std::runtime_error("Current index is not a valid value");
 
 	return (std::stod(_value));
@@ -191,7 +192,7 @@ configuration::Param::operator double(void) const
 
 configuration::Param::operator float(void) const
 {
-	if (_status == configuration::Param::MAP)
+	if (_status == configuration::Param::Status::MAP)
 		throw std::runtime_error("Current index is not a valid value");
 
 	return (static_cast<float>(std::stod(_value)));
@@ -199,10 +200,26 @@ configuration::Param::operator float(void) const
 
 configuration::Param::operator std::string(void) const
 {
-	if (_status == configuration::Param::MAP)
+	if (_status == configuration::Param::Status::MAP)
 		throw std::runtime_error("Current index is not a valid value");
 
 	return (_value);
+}
+
+configuration::Param::operator std::vector<std::string>(void) const
+{
+	if (_status == configuration::Param::Status::MAP)
+		throw std::runtime_error("Current index is not a valid value");
+
+	std::vector<std::string> splittedVec = split(_value, (char)CONFIGURATION_DEFAULT_LIST_DELIMITER);
+
+	//remove possible whitspaces
+	for (size_t i = 0; i < splittedVec.size(); i++)
+	{
+		splittedVec[i] = reduce(splittedVec[i]);
+	}
+
+	return (splittedVec);
 }
 
 bool configuration::loadConfig(string fileName)
@@ -232,14 +249,14 @@ bool configuration::loadConfig(string fileName)
 		if (configData.empty())
 			continue;
 
-		unsigned int length = configData.find(delimeter);
+		unsigned int length = (unsigned int)configData.find(delimeter);
 
 		string tag, value;
 
 		if (length != string::npos)
 		{
 			tag = configData.substr(initPos, length);
-			value = configData.substr(length + 1);
+			value = configData.substr((length + 1));
 		}
 
 		// Trim white spaces
@@ -278,38 +295,4 @@ void genericTools::configuration::dumpConfig()
 void configuration::loadDefaultConfig()
 {
 	//TODO: set most basic acceptable configuration to run the application (hard coded ?)
-}
-
-std::string genericTools::configuration::trim(const std::string &str, const std::string &whitespace)
-{
-	size_t strBegin = str.find_first_not_of(whitespace);
-	// reuturn empty if it is all whitespace
-	if (strBegin == std::string::npos)
-		return "";
-
-	size_t strEnd = str.find_last_not_of(whitespace);
-	size_t strRange = strEnd - strBegin + 1;
-	// remove multiple whitespaces
-	return str.substr(strBegin, strRange);
-}
-
-std::string genericTools::configuration::reduce(const std::string &str, const std::string &fill, const std::string &whitespace)
-{
-	// trim first
-	string result = trim(str, whitespace);
-
-	// replace sub ranges
-	size_t beginSpace = result.find_first_of(whitespace);
-	while (beginSpace != std::string::npos)
-	{
-		size_t endSpace = result.find_first_not_of(whitespace, beginSpace);
-		size_t range = endSpace - beginSpace;
-
-		result.replace(beginSpace, range, fill);
-
-		size_t newStart = beginSpace + fill.length();
-		beginSpace = result.find_first_of(whitespace, newStart);
-	}
-
-	return result;
 }
