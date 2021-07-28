@@ -1,3 +1,4 @@
 # Bit tools
 
-This folder regroup different bits tools that can be used on embedded projects.
+This folder regroup different bits tools bitHelpers can be use on embedded projects.
+
